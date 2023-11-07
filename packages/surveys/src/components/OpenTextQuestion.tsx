@@ -1,5 +1,5 @@
-import { TResponseData } from "@formbricks/types/v1/responses";
-import type { TSurveyOpenTextQuestion } from "@formbricks/types/v1/surveys";
+import { TResponseData } from "@formbricks/types/responses";
+import type { TSurveyOpenTextQuestion } from "@formbricks/types/surveys";
 import { BackButton } from "./BackButton";
 import Headline from "./Headline";
 import Subheader from "./Subheader";
@@ -34,11 +34,14 @@ export default function OpenTextQuestion({
     // setIsValid(isValidInput);
     onChange({ [question.id]: inputValue });
   };
-  const openTextRef = useCallback((currentElement: HTMLInputElement | HTMLTextAreaElement | null) => {
-    if (currentElement && autoFocus) {
-      currentElement.focus();
-    }
-  }, []);
+  const openTextRef = useCallback(
+    (currentElement: HTMLInputElement | HTMLTextAreaElement | null) => {
+      if (currentElement && autoFocus) {
+        currentElement.focus();
+      }
+    },
+    [autoFocus]
+  );
 
   return (
     <form
@@ -49,6 +52,12 @@ export default function OpenTextQuestion({
         // }
       }}
       className="w-full">
+      {question.imageUrl && (
+        <div className="my-4 rounded-md">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={question.imageUrl} alt="question-image" className={"my-4 rounded-md"} />
+        </div>
+      )}
       <Headline headline={question.headline} questionId={question.id} required={question.required} />
       <Subheader subheader={question.subheader} questionId={question.id} />
       <div className="mt-4">
@@ -60,7 +69,7 @@ export default function OpenTextQuestion({
             id={question.id}
             placeholder={question.placeholder}
             required={question.required}
-            value={value as string}
+            value={value ? (value as string) : ""}
             type={question.inputType}
             onInput={(e) => handleInputChange(e.currentTarget.value)}
             autoFocus={autoFocus}
@@ -105,7 +114,7 @@ export default function OpenTextQuestion({
         )}
         <div></div>
         <SubmitButton
-          question={question}
+          buttonLabel={question.buttonLabel}
           isLastQuestion={isLastQuestion}
           brandColor={brandColor}
           onClick={() => {}}

@@ -5,23 +5,22 @@ import type {
   TEnvironment,
   TEnvironmentCreateInput,
   TEnvironmentUpdateInput,
-} from "@formbricks/types/v1/environment";
+} from "@formbricks/types/environment";
 import {
   ZEnvironment,
   ZEnvironmentCreateInput,
   ZEnvironmentUpdateInput,
   ZId,
-} from "@formbricks/types/v1/environment";
-import { DatabaseError, ResourceNotFoundError, ValidationError } from "@formbricks/types/v1/errors";
-import { EventType, Prisma } from "@prisma/client";
-import { revalidateTag, unstable_cache } from "next/cache";
+} from "@formbricks/types/environment";
+import { DatabaseError, ResourceNotFoundError, ValidationError } from "@formbricks/types/errors";
+import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import "server-only";
 import { z } from "zod";
 import { SERVICES_REVALIDATION_INTERVAL } from "../constants";
 import { validateInputs } from "../utils/validate";
-
-export const getEnvironmentCacheTag = (environmentId: string) => `environments-${environmentId}`;
-export const getEnvironmentsCacheTag = (productId: string) => `products-${productId}-environments`;
+import { environmentCache } from "./cache";
+import { formatEnvironmentDateFields } from "./util";
 
 export const getEnvironment = (environmentId: string) =>
   unstable_cache(
@@ -37,7 +36,8 @@ export const getEnvironment = (environmentId: string) =>
         });
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new DatabaseError("Database operation failed");
+          console.error(error);
+          throw new DatabaseError(error.message);
         }
 
         throw error;
@@ -53,9 +53,9 @@ export const getEnvironment = (environmentId: string) =>
         throw new ValidationError("Data validation of environment failed");
       }
     },
-    [`environments-${environmentId}`],
+    [`getEnvironment-${environmentId}`],
     {
-      tags: [getEnvironmentCacheTag(environmentId)],
+      tags: [environmentCache.tag.byId(environmentId)],
       revalidate: SERVICES_REVALIDATION_INTERVAL,
     }
   )();
@@ -80,7 +80,7 @@ export const getEnvironments = async (productId: string): Promise<TEnvironment[]
         }
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new DatabaseError("Database operation failed");
+          throw new DatabaseError(error.message);
         }
         throw error;
       }
@@ -100,9 +100,9 @@ export const getEnvironments = async (productId: string): Promise<TEnvironment[]
         throw new ValidationError("Data validation of environments array failed");
       }
     },
-    [`products-${productId}-environments`],
+    [`getEnvironments-${productId}`],
     {
-      tags: [getEnvironmentsCacheTag(productId)],
+      tags: [environmentCache.tag.byProductId(productId)],
       revalidate: SERVICES_REVALIDATION_INTERVAL,
     }
   )();
@@ -122,42 +122,55 @@ export const updateEnvironment = async (
       data: newData,
     });
 
-    revalidateTag(getEnvironmentsCacheTag(updatedEnvironment.productId));
-    revalidateTag(getEnvironmentCacheTag(environmentId));
+    environmentCache.revalidate({
+      id: environmentId,
+      productId: updatedEnvironment.productId,
+    });
 
     return updatedEnvironment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError("Database operation failed");
+      throw new DatabaseError(error.message);
     }
     throw error;
   }
 };
 
 export const getFirstEnvironmentByUserId = async (userId: string): Promise<TEnvironment | null> => {
-  validateInputs([userId, ZId]);
-  try {
-    return await prisma.environment.findFirst({
-      where: {
-        type: "production",
-        product: {
-          team: {
-            memberships: {
-              some: {
-                userId,
+  const environment = await unstable_cache(
+    async () => {
+      validateInputs([userId, ZId]);
+      try {
+        return await prisma.environment.findFirst({
+          where: {
+            type: "production",
+            product: {
+              team: {
+                memberships: {
+                  some: {
+                    userId,
+                  },
+                },
               },
             },
           },
-        },
-      },
-    });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError("Database operation failed");
-    }
+        });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new DatabaseError(error.message);
+        }
 
-    throw error;
-  }
+        throw error;
+      }
+    },
+    [`getFirstEnvironmentByUserId-${userId}`],
+    {
+      tags: [environmentCache.tag.byUserId(userId)],
+      revalidate: SERVICES_REVALIDATION_INTERVAL,
+    }
+  )();
+
+  return environment ? formatEnvironmentDateFields(environment) : environment;
 };
 
 export const createEnvironment = async (
@@ -166,41 +179,43 @@ export const createEnvironment = async (
 ): Promise<TEnvironment> => {
   validateInputs([productId, ZId], [environmentInput, ZEnvironmentCreateInput]);
 
-  return await prisma.environment.create({
+  const environment = await prisma.environment.create({
     data: {
       type: environmentInput.type || "development",
       product: { connect: { id: productId } },
       widgetSetupCompleted: environmentInput.widgetSetupCompleted || false,
       eventClasses: {
-        create: populateEnvironment.eventClasses,
+        create: [
+          {
+            name: "New Session",
+            description: "Gets fired when a new session is created",
+            type: "automatic",
+          },
+          {
+            name: "Exit Intent (Desktop)",
+            description: "A user on Desktop leaves the website with the cursor.",
+            type: "automatic",
+          },
+          {
+            name: "50% Scroll",
+            description: "A user scrolled 50% of the current page",
+            type: "automatic",
+          },
+        ],
       },
       attributeClasses: {
-        create: populateEnvironment.attributeClasses,
+        create: [
+          { name: "userId", description: "The internal ID of the person", type: "automatic" },
+          { name: "email", description: "The email of the person", type: "automatic" },
+        ],
       },
     },
   });
-};
 
-export const populateEnvironment = {
-  eventClasses: [
-    {
-      name: "New Session",
-      description: "Gets fired when a new session is created",
-      type: EventType.automatic,
-    },
-    {
-      name: "Exit Intent (Desktop)",
-      description: "A user on Desktop leaves the website with the cursor.",
-      type: EventType.automatic,
-    },
-    {
-      name: "50% Scroll",
-      description: "A user scrolled 50% of the current page",
-      type: EventType.automatic,
-    },
-  ],
-  attributeClasses: [
-    { name: "userId", description: "The internal ID of the person", type: EventType.automatic },
-    { name: "email", description: "The email of the person", type: EventType.automatic },
-  ],
+  environmentCache.revalidate({
+    id: environment.id,
+    productId: environment.productId,
+  });
+
+  return environment;
 };

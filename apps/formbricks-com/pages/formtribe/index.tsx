@@ -1,8 +1,8 @@
-import LayoutLight from "@/pages/formtribe/LayoutLight";
 import { Button } from "@formbricks/ui/Button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@formbricks/ui/Tooltip";
 import Head from "next/head";
 import Image from "next/image";
+import LayoutTribe from "./LayoutTribe";
 
 import Dhru from "@/images/formtribe/dhru.jpeg";
 import Jojo from "@/images/formtribe/jojo.jpeg";
@@ -51,19 +51,9 @@ const HowTo = [
 
 const SideQuests = [
   {
-    points: "Join the Tribe Tweet (100 Points)",
-    quest: "Tweet a single “🧱” emoji before the 7th of October EOD to join the #FormTribe.",
-    proof: "Share the link to the tweet in the “side-quest” channel.",
-  },
-  {
     points: "Spread the Word Tweet (100 Points)",
     quest: "Tweet “🧱🚀” on the day of the ProductHunt launch to spread the word.",
     proof: "Share the link to the tweet in the “side-quest” channel.",
-  },
-  {
-    points: "Setup Insights (200 Points)",
-    quest: "Screen record yourself setting up the Formbricks dev environment.",
-    proof: "Upload to WeTransfer and send to johannes@formbricks.com",
   },
   {
     points: "Meme Magic (50 Points + up to 100 Points)",
@@ -83,24 +73,14 @@ const SideQuests = [
     proof: "Share the design in the “side-quest” channel.",
   },
   {
-    points: "Transform Animation to CSS (350 Points per background)",
-    quest: "Animate an existing background to CSS versions (more infos on Notion).",
-    proof: "Share the animated background.",
-  },
-  {
-    points: "Enhance Docs (50-250 Points)",
-    quest:
-      "Add a new section to our docs where you see gaps. Follow the current style of documentation incl. code snippets and screenshots. Pls no spam.",
-    proof: "Open a PR with “docs” in the title",
-  },
-  {
     points: "Starry-eyed Supporter (250 Points)",
     quest: "Get five friends to star our repository.",
     proof: "Share 5 screenshots of the chats where you asked them and they confirmed + their GitHub names",
   },
   {
-    points: "Bug Hunter (50-250 Points)",
-    quest: "Find and report any functionality bugs.",
+    points: "Bug Hunter (100 Points)",
+    quest:
+      "Find and report any bugs in our core product. We will close all bugs on the landing page bc we don't have time for that before the launch :)",
     proof: "Open a bug issue in our repository.",
   },
   {
@@ -108,11 +88,6 @@ const SideQuests = [
     quest:
       "Find someone whose name would be funny as a play on words with “brick”. Then, with the help of AI, create a brick version of this person like Brick Astley, Brickj Minaj, etc. For extra points, tweet it, tag us and score +5 for each like.",
     proof: "Share your art or link to the tweet in the “side-quest” channel.",
-  },
-  {
-    points: "SEO Sage (50-250 Points)",
-    quest: "Provide detailed SEO recommendations or improvements for our main website.",
-    proof: "Share your insights.",
   },
   {
     points: "Community Connector (50 points each, up to 250 points)",
@@ -269,12 +244,12 @@ const FAQ = [
 const Leaderboard = [
   {
     name: "Piyush",
-    points: "1600",
+    points: "4045",
     link: "https://github.com/gupta-piyush19",
   },
   {
     name: "Suman",
-    points: "700",
+    points: "1000",
   },
   {
     name: "Subhdeep",
@@ -282,7 +257,7 @@ const Leaderboard = [
   },
   {
     name: "Pratik",
-    points: "350",
+    points: "1350",
   },
   {
     name: "Karuppiah",
@@ -302,7 +277,7 @@ const Leaderboard = [
   },
   {
     name: "Naitik Kapadia (Arjun)",
-    points: "1400",
+    points: "3250",
     link: "https://github.com/KapadiaNaitik",
   },
   {
@@ -343,7 +318,7 @@ const Leaderboard = [
   },
   {
     name: "Nafees Nazik",
-    points: "100",
+    points: "600",
   },
   {
     name: "monk",
@@ -359,12 +334,12 @@ const Leaderboard = [
   },
   {
     name: "Aditya Deshlahre",
-    points: "1120",
+    points: "2120",
     link: "https://github.com/adityadeshlahre",
   },
   {
     name: "Rutam",
-    points: "955",
+    points: "1105",
   },
   {
     name: "Sagnik Sahoo",
@@ -388,11 +363,11 @@ const Leaderboard = [
   },
   {
     name: "Rohit Mondal",
-    points: "155",
+    points: "205",
   },
   {
-    name: "noobcoder",
-    points: "250",
+    name: "thanmaisai",
+    points: "2825",
   },
   {
     name: "Rayyan Alam (Rayy)",
@@ -412,7 +387,7 @@ const Leaderboard = [
   },
   {
     name: "Anjaneya Gupta",
-    points: "650",
+    points: "3150",
   },
   {
     name: "Sachin Kuber",
@@ -432,16 +407,12 @@ const Leaderboard = [
   },
   {
     name: "yatharth",
-    points: "600",
+    points: "650",
   },
   {
     name: "Ratish Jain",
-    points: "150",
+    points: "300",
     link: "https://github.com/ratishjain12",
-  },
-  {
-    name: "yatharth",
-    points: "600",
   },
   {
     name: "Subham Raj",
@@ -449,16 +420,16 @@ const Leaderboard = [
   },
   {
     name: "Abhinav Arya",
-    points: "300",
+    points: "1100",
     link: "github.com/itzabhinavarya",
   },
   {
     name: "Yash Nirmal",
-    points: "100",
+    points: "200",
   },
   {
     name: "Rohan Gupta",
-    points: "1150",
+    points: "1350",
     link: "https://github.com/rohan9896",
   },
   {
@@ -468,7 +439,7 @@ const Leaderboard = [
   },
   {
     name: "Eduardo Noronha",
-    points: "100",
+    points: "200",
   },
   {
     name: "Joyal",
@@ -497,19 +468,15 @@ const Leaderboard = [
   },
   {
     name: "bitnagar",
-    points: "100",
-  },
-  {
-    name: "bitnagar",
-    points: "400",
+    points: "150",
   },
   {
     name: "United1l",
-    points: "250",
+    points: "350",
   },
   {
     name: "Arya Bhosale",
-    points: "200",
+    points: "300",
   },
   {
     name: "Bhavya",
@@ -517,7 +484,163 @@ const Leaderboard = [
   },
   {
     name: "Bilal Mirza",
+    points: "2095",
+  },
+  {
+    name: "Asharan2511",
+    points: "50",
+  },
+  {
+    name: "bhimanshu",
+    points: "50",
+  },
+  {
+    name: "Digvijay Gupta",
+    points: "300",
+  },
+  {
+    name: "hercules_2401",
+    points: "100",
+  },
+  {
+    name: "iampolska742",
+    points: "50",
+  },
+  {
+    name: "Jonas Hoebenreich",
+    points: "100",
+  },
+  {
+    name: "Markson",
+    points: "100",
+  },
+  {
+    name: "Mohd Zama",
+    points: "50",
+  },
+  {
+    name: "Moheyt",
+    points: "550",
+  },
+  {
+    name: "ortin779",
+    points: "275",
+  },
+  {
+    name: "Piyush Garg",
+    points: "650",
+  },
+  {
+    name: "Sachin Mittal",
+    points: "850",
+  },
+  {
+    name: "Sha1kh4",
+    points: "50",
+  },
+  {
+    name: "Soham Tembhurne",
+    points: "50",
+  },
+  {
+    name: "Sundaram2021",
+    points: "50",
+  },
+  {
+    name: "tarunclub",
+    points: "50",
+  },
+  {
+    name: "thevinitgupta",
+    points: "50",
+  },
+  {
+    name: "Vishal Khoje",
+    points: "100",
+  },
+  {
+    name: "Aadish1233",
+    points: "50",
+  },
+  {
+    name: "aashish",
+    points: "980",
+  },
+  {
+    name: "AliYar-Khan",
+    points: "50",
+  },
+  {
+    name: "Hanan Mehmood",
+    points: "50",
+  },
+  {
+    name: "Janumala Akhilendra",
+    points: "50",
+  },
+  {
+    name: "Nilanjan Pramanik",
+    points: "50",
+  },
+  {
+    name: "Vedant-Z",
+    points: "200",
+  },
+  {
+    name: "Vineetjk",
+    points: "50",
+  },
+  {
+    name: "Hemanth Wasthere",
+    points: "100",
+  },
+  {
+    name: "Ola",
+    points: "1800",
+  },
+  {
+    name: "Olalaye Blessing",
     points: "150",
+  },
+  {
+    name: "Raju Gangitla",
+    points: "100",
+  },
+  {
+    name: "Ronit Panda",
+    points: "1650",
+  },
+  {
+    name: "Shyam Raghu",
+    points: "500",
+  },
+  {
+    name: "Vikas Patil",
+    points: "250",
+  },
+  {
+    name: "0Armaan025",
+    points: "100",
+  },
+  {
+    name: "mandharet",
+    points: "100",
+  },
+  {
+    name: "Harshit Vashisht",
+    points: "200",
+  },
+  {
+    name: "JiyaGupta-cs",
+    points: "50",
+  },
+  {
+    name: "Kurayami",
+    points: "100",
+  },
+  {
+    name: "Sandy-1711",
+    points: "50",
   },
 ];
 
@@ -527,7 +650,7 @@ export default function FormTribeHackathon() {
     document.documentElement.classList.remove("dark");
   }, []);
   return (
-    <LayoutLight
+    <LayoutTribe
       title="FormTribe Hackathon"
       description="Can we ship an Open Source Typeform alternative in 30 days?">
       <Head>
@@ -540,7 +663,7 @@ export default function FormTribeHackathon() {
 
       <div className="px-4 pb-16 pt-16 text-center sm:px-6 lg:px-8 lg:pb-32 lg:pt-20">
         <a
-          href="https://www.producthunt.com/products/formbricks"
+          href="https://www.producthunt.com/posts/formbricks"
           target="_blank"
           className=" rounded-full border bg-slate-100 px-4 py-1.5 text-sm text-slate-500 hover:scale-105">
           Don&apos;t miss the launch! Get notified 🚀
@@ -568,7 +691,7 @@ export default function FormTribeHackathon() {
         {/* Right Column: Headline + Ordered List */}
         <div className="flex items-center justify-center sm:pl-12 md:w-1/2">
           <div className="space-y-5">
-            <h1 className="font-kablammo text-3xl font-bold text-slate-800">In a nutshell</h1>
+            <h1 className="font-kablammo text-3xl text-slate-800">In a nutshell</h1>
             <ol className="list-inside list-decimal space-y-3 text-slate-700">
               <li>
                 <strong>As a community,</strong> we will ship all link survey features for a Typeform like
@@ -787,9 +910,7 @@ export default function FormTribeHackathon() {
 
       {/* Side Quests */}
       <div className="mt-16" id="side-quests">
-        <h3 className="font-kablammo my-4 text-4xl font-bold text-slate-800">
-          🏰 Side Quests: Increase your chances
-        </h3>
+        <h3 className="font-kablammo my-4 text-4xl text-slate-800">🏰 Side Quests: Increase your chances</h3>
         <p className="w-3/4 text-slate-600">
           While code contributions are what gives the most points, everyone gets to bump up their chance of
           winning. Here is a list of side quests you can complete:
@@ -924,7 +1045,7 @@ export default function FormTribeHackathon() {
 
       {/* FAQ */}
       <div className="mt-32" id="faq">
-        <h3 className="font-kablammo my-4 text-4xl font-bold text-slate-800">FAQ</h3>
+        <h3 className="font-kablammo my-4 text-4xl text-slate-800">FAQ</h3>
         <p className="w-3/4 text-slate-600">Anything unclear?</p>
         <div className="mt-8">
           {FAQ.map((question) => (
@@ -942,18 +1063,19 @@ export default function FormTribeHackathon() {
       </Button>
       {/* Breaker 3 */}
       <Breaker icon="👋" title="Join the Tribe!" />
-    </LayoutLight>
+    </LayoutTribe>
   );
 }
 
 const SectionHeading = ({ title, subTitle, description, id }) => {
   return (
     <div id={id} className="lg:pt-18 mt-32 px-4 pb-12 text-center sm:px-6 lg:px-8 ">
-      <p className=" text-[3rem] text-slate-500">{subTitle}</p>
-      <h1 className="font-kablammo mb-8 mt-4 bg-gradient-to-br from-[#032E1E] via-[#032E1E] to-[#013C27] bg-clip-text text-6xl text-transparent">
+      <p className="pb-4 text-xl text-slate-500 lg:text-[3rem]">{subTitle}</p>
+      <h1 className="font-kablammo mb-8 mt-4 bg-gradient-to-br from-[#032E1E] via-[#032E1E] to-[#013C27] bg-clip-text text-4xl text-transparent lg:text-6xl">
         {title}
       </h1>
-      <p className="mx-auto mt-4 text-slate-700 sm:w-3/4">{description}</p>
+      <p className="mx-auto mt-4 text-base text-slate-700 sm:w-3/4">{description}</p>{" "}
+      {/* Reduced text size for description */}
     </div>
   );
 };
@@ -1004,7 +1126,7 @@ const Breaker = ({ icon, title }) => {
       <div className="mt-4 flex items-center justify-center">
         <Image src={PHLogo} alt="ph-logo" className="mr-2 h-8 w-8" />
         <a
-          href="https://www.producthunt.com/products/formbricks"
+          href="https://www.producthunt.com/posts/formbricks"
           target="_blank"
           className="text-sm font-semibold text-[#ff6154]">
           Get notified on Product Hunt.

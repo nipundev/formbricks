@@ -1,10 +1,9 @@
 import { useCallback } from "preact/hooks";
 import { cn } from "../../../lib/cn";
 import { isLight } from "../lib/utils";
-import { TSurveyQuestion } from "../../../types/v1/surveys";
 
 interface SubmitButtonProps {
-  question: TSurveyQuestion;
+  buttonLabel: string | undefined;
   isLastQuestion: boolean;
   brandColor: string;
   onClick: () => void;
@@ -14,7 +13,7 @@ interface SubmitButtonProps {
 }
 
 function SubmitButton({
-  question,
+  buttonLabel,
   isLastQuestion,
   brandColor,
   onClick,
@@ -22,13 +21,16 @@ function SubmitButton({
   focus = false,
   type = "submit",
 }: SubmitButtonProps) {
-  const buttonRef = useCallback((currentButton: HTMLButtonElement | null) => {
-    if (currentButton && focus) {
-      setTimeout(() => {
-        currentButton.focus();
-      }, 200);
-    }
-  }, []);
+  const buttonRef = useCallback(
+    (currentButton: HTMLButtonElement | null) => {
+      if (currentButton && focus) {
+        setTimeout(() => {
+          currentButton.focus();
+        }, 200);
+      }
+    },
+    [focus]
+  );
 
   return (
     <button
@@ -42,7 +44,7 @@ function SubmitButton({
       )}
       style={{ backgroundColor: brandColor }}
       onClick={onClick}>
-      {question.buttonLabel || (isLastQuestion ? "Finish" : "Next")}
+      {buttonLabel || (isLastQuestion ? "Finish" : "Next")}
     </button>
   );
 }

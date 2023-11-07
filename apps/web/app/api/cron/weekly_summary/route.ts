@@ -1,4 +1,4 @@
-import { responses } from "@/lib/api/response";
+import { responses } from "@/app/lib/api/response";
 import { prisma } from "@formbricks/database";
 import { CRON_SECRET } from "@formbricks/lib/constants";
 import { headers } from "next/headers";
@@ -73,7 +73,7 @@ const getNotificationResponse = (environment: EnvironmentData, productName: stri
       id: survey.id,
       name: survey.name,
       status: survey.status,
-      responsesCount: survey.responses.length,
+      responseCount: survey.responses.length,
       responses: [],
     };
     // iterate through the responses and calculate the survey insights

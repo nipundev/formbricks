@@ -4,10 +4,13 @@ import dts from "vite-plugin-dts";
 
 export default defineConfig({
   build: {
+    emptyOutDir: false, // keep the dist folder to avoid errors with pnpm go when folder is empty during build
+    minify: "terser",
+    sourcemap: true,
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, "src/index.ts"),
-      name: "formbricks-js",
+      name: "formbricks",
       formats: ["cjs", "es", "umd"],
       // the proper extensions will be added
       fileName: "index",

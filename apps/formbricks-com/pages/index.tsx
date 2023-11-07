@@ -3,6 +3,7 @@ import Features from "@/components/home/Features";
 import GitHubSponsorship from "@/components/home/GitHubSponsorship";
 import Hero from "@/components/home/Hero";
 import Highlights from "@/components/home/Highlights";
+import ScrollToTopButton from "@/components/home/ScrollToTop";
 import Steps from "@/components/home/Steps";
 import BestPractices from "@/components/shared/BestPractices";
 import BreakerCTA from "@/components/shared/BreakerCTA";
@@ -13,12 +14,13 @@ const IndexPage = () => (
     title="Formbricks | Privacy-first Experience Management"
     description="Build qualitative user research into your product. Leverage Best practices to increase Product-Market Fit.">
     <Hero />
-    <div className="hidden lg:block">
+    {/*     <div className="hidden lg:block">
       <GitHubSponsorship />
-    </div>
+    </div> */}
     <BestPractices />
     <Features />
     <Highlights />
+    <ScrollToTopButton />
     <div className="block lg:hidden">
       <GitHubSponsorship />
     </div>

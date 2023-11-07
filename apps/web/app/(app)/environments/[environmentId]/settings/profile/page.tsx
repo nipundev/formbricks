@@ -3,15 +3,16 @@ export const revalidate = REVALIDATION_INTERVAL;
 import { REVALIDATION_INTERVAL } from "@formbricks/lib/constants";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@formbricks/lib/authOptions";
-import SettingsCard from "../SettingsCard";
-import SettingsTitle from "../SettingsTitle";
-import { DeleteAccount } from "./DeleteAccount";
-import { EditName } from "./EditName";
-import { EditAvatar } from "./EditAvatar";
-import AccountSecurity from "@/app/(app)/environments/[environmentId]/settings/profile/AccountSecurity";
+import SettingsCard from "../components/SettingsCard";
+import SettingsTitle from "../components/SettingsTitle";
+import { DeleteAccount } from "./components/DeleteAccount";
+import { EditName } from "./components/EditName";
+import { EditAvatar } from "./components/EditAvatar";
+import AccountSecurity from "@/app/(app)/environments/[environmentId]/settings/profile/components/AccountSecurity";
 import { getProfile } from "@formbricks/lib/profile/service";
 
-export default async function ProfileSettingsPage() {
+export default async function ProfileSettingsPage({ params }: { params: { environmentId: string } }) {
+  const { environmentId } = params;
   const session = await getServerSession(authOptions);
   const profile = session ? await getProfile(session.user.id) : null;
 
@@ -24,7 +25,7 @@ export default async function ProfileSettingsPage() {
             <EditName profile={profile} />
           </SettingsCard>
           <SettingsCard title="Avatar" description="Assist your team in identifying you on Formbricks.">
-            <EditAvatar session={session} />
+            <EditAvatar session={session} environmentId={environmentId} />
           </SettingsCard>
           {profile.identityProvider === "email" && (
             <SettingsCard title="Security" description="Manage your password and other security settings.">

@@ -1,17 +1,19 @@
 export const revalidate = REVALIDATION_INTERVAL;
 
-import LinkSurvey from "@/app/s/[surveyId]/LinkSurvey";
-import SurveyInactive from "@/app/s/[surveyId]/SurveyInactive";
+import LinkSurvey from "@/app/s/[surveyId]/components/LinkSurvey";
+import SurveyInactive from "@/app/s/[surveyId]/components/SurveyInactive";
 import { REVALIDATION_INTERVAL, WEBAPP_URL } from "@formbricks/lib/constants";
 import { getOrCreatePersonByUserId } from "@formbricks/lib/person/service";
 import { getProductByEnvironmentId } from "@formbricks/lib/product/service";
 import { getSurvey } from "@formbricks/lib/survey/service";
-import { getEmailVerificationStatus } from "./helpers";
-import { checkValidity } from "@/app/s/[surveyId]/prefilling";
+import { getEmailVerificationStatus } from "./lib/helpers";
+import { checkValidity } from "@/app/s/[surveyId]/lib/prefilling";
 import { notFound } from "next/navigation";
 import { getResponseBySingleUseId } from "@formbricks/lib/response/service";
-import { TResponse } from "@formbricks/types/v1/responses";
-import { validateSurveySingleUseId } from "@/lib/singleUseSurveys";
+import { TResponse } from "@formbricks/types/responses";
+import { validateSurveySingleUseId } from "@/app/lib/singleUseSurveys";
+import type { Metadata } from "next";
+import PinScreen from "@/app/s/[surveyId]/components/PinScreen";
 
 interface LinkSurveyPageProps {
   params: {
@@ -24,8 +26,55 @@ interface LinkSurveyPageProps {
   };
 }
 
+export async function generateMetadata({ params }: LinkSurveyPageProps): Promise<Metadata> {
+  const survey = await getSurvey(params.surveyId);
+
+  if (!survey || survey.type !== "link" || survey.status === "draft") {
+    notFound();
+  }
+
+  const product = await getProductByEnvironmentId(survey.environmentId);
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  function getNameForURL(string) {
+    return string.replace(/ /g, "%20");
+  }
+
+  function getBrandColorForURL(string) {
+    return string.replace(/#/g, "%23");
+  }
+
+  const brandColor = getBrandColorForURL(product.brandColor);
+  const surveyName = getNameForURL(survey.name);
+
+  const ogImgURL = `/api/v1/og?brandColor=${brandColor}&name=${surveyName}`;
+
+  return {
+    metadataBase: new URL(WEBAPP_URL),
+    openGraph: {
+      title: survey.name,
+      description: "Create your own survey like this with Formbricks' open source survey suite.",
+      url: `/s/${survey.id}`,
+      siteName: "",
+      images: [ogImgURL],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: survey.name,
+      description: "Create your own survey like this with Formbricks' open source survey suite.",
+      images: [ogImgURL],
+    },
+  };
+}
+
 export default async function LinkSurveyPage({ params, searchParams }: LinkSurveyPageProps) {
   const survey = await getSurvey(params.surveyId);
+
   const suId = searchParams.suId;
   const isSingleUseSurvey = survey?.singleUse?.enabled;
   const isSingleUseSurveyEncrypted = survey?.singleUse?.isEncrypted;
@@ -68,7 +117,13 @@ export default async function LinkSurveyPage({ params, searchParams }: LinkSurve
 
   let singleUseResponse: TResponse | undefined = undefined;
   if (isSingleUseSurvey) {
-    singleUseResponse = (await getResponseBySingleUseId(survey.id, singleUseId)) ?? undefined;
+    try {
+      singleUseResponse = singleUseId
+        ? (await getResponseBySingleUseId(survey.id, singleUseId)) ?? undefined
+        : undefined;
+    } catch (error) {
+      singleUseResponse = undefined;
+    }
   }
 
   // verify email: Check if the survey requires email verification
@@ -94,6 +149,23 @@ export default async function LinkSurveyPage({ params, searchParams }: LinkSurve
   let person;
   if (userId) {
     person = await getOrCreatePersonByUserId(userId, survey.environmentId);
+  }
+
+  const isSurveyPinProtected = Boolean(!!survey && survey.pin);
+
+  if (isSurveyPinProtected) {
+    return (
+      <PinScreen
+        surveyId={survey.id}
+        product={product}
+        personId={person?.id}
+        emailVerificationStatus={emailVerificationStatus}
+        prefillAnswer={isPrefilledAnswerValid ? prefillAnswer : null}
+        singleUseId={isSingleUseSurvey ? singleUseId : undefined}
+        singleUseResponse={singleUseResponse ? singleUseResponse : undefined}
+        webAppUrl={WEBAPP_URL}
+      />
+    );
   }
 
   return (
